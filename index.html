@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Air India Cabin Crew Assessment Portal — 150 MCQs</title>
+  <style>
+    :root {
+      --ai-red: #b81428;
+      --ai-red-dark: #8a0c1b;
+      --ai-gold: #c59b27;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #065f46;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #991b1b;
+      --selected-bg: #fff1f2;
+      --selected-border: #b81428;
+      --review-color: #7c3aed;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--ai-red), var(--ai-red-dark));
+      color: #fff; padding: 14px 16px; position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand h1 { font-size: 1.05rem; font-weight: 800; letter-spacing: 0.2px; }
+    .brand p { font-size: 0.75rem; opacity: 0.9; margin-top: 2px; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .icon-btn {
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; padding: 7px 11px; border-radius: 8px; font-size: 0.8rem;
+      font-weight: 600; cursor: pointer;
+    }
+
+    .container { max-width: 640px; width: 100%; margin: 0 auto; padding: 14px; flex: 1; }
+
+    /* Home / Setup Screen */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .hero-card {
+      background: var(--card); border-radius: 16px; padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06); margin-bottom: 16px;
+      border-top: 4px solid var(--ai-red);
+    }
+    .hero-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+    .hero-sub { font-size: 0.85rem; color: var(--muted); line-height: 1.45; margin-bottom: 18px; }
+
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+    .mode-card {
+      border: 2px solid var(--border); border-radius: 12px; padding: 14px;
+      cursor: pointer; transition: all 0.15s ease; text-align: left; background: #fff;
+    }
+    .mode-card.selected { border-color: var(--ai-red); background: var(--selected-bg); }
+    .mode-card .m-icon { font-size: 1.5rem; margin-bottom: 6px; display: block; }
+    .mode-card .m-title { font-size: 0.95rem; font-weight: 700; color: var(--text); display: block; }
+    .mode-card .m-desc { font-size: 0.76rem; color: var(--muted); margin-top: 4px; display: block; line-height: 1.35; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .form-select {
+      width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border);
+      font-size: 0.92rem; font-weight: 600; background: #fff; color: var(--text);
+    }
+    .toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 14px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--border);
+      margin-bottom: 18px; font-size: 0.9rem; font-weight: 600;
+    }
+    .toggle-row input { width: 18px; height: 18px; accent-color: var(--ai-red); }
+
+    .primary-btn {
+      width: 100%; padding: 14px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--ai-red), var(--ai-red-dark));
+      color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(184, 20, 40, 0.25);
+    }
+
+    /* Top Status Bar in Quiz */
+    .quiz-topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--card); padding: 10px 14px; border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 12px; gap: 8px;
+    }
+    .mode-pill {
+      font-size: 0.75rem; font-weight: 800; padding: 4px 9px; border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .pill-practice { background: #e0f2fe; color: #0369a1; }
+    .pill-test { background: #fef3c7; color: #b45309; }
+    .timer-box { font-size: 0.9rem; font-weight: 800; color: var(--ai-red); font-variant-numeric: tabular-nums; }
+    .palette-btn {
+      background: #f1f5f9; border: 1px solid var(--border); padding: 6px 10px;
+      border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+    }
+
+    .progress-wrap { margin-bottom: 12px; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+    .progress-bar { width: 100%; height: 6px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--ai-red); width: 0%; transition: width 0.25s ease; }
+
+    /* Question Card */
+    .q-card {
+      background: var(--card); border-radius: 16px; padding: 18px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06); margin-bottom: 14px;
+    }
+    .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .cat-badge {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 6px;
+    }
+    .review-flag {
+      font-size: 0.75rem; font-weight: 700; background: none; border: 1px solid var(--border);
+      padding: 4px 9px; border-radius: 6px; cursor: pointer; color: var(--muted);
+    }
+    .review-flag.flagged { background: #f3e8ff; border-color: var(--review-color); color: var(--review-color); }
+
+    .q-text { font-size: 1.05rem; font-weight: 700; line-height: 1.45; margin-bottom: 16px; color: var(--text); }
+    .options-list { display: flex; flex-direction: column; gap: 10px; }
+    .opt-btn {
+      width: 100%; text-align: left; padding: 13px 14px;
+      border: 2px solid var(--border); border-radius: 12px; background: #fff;
+      font-size: 0.94rem; color: var(--text); cursor: pointer;
+      display: flex; align-items: flex-start; gap: 10px; transition: all 0.12s ease;
+    }
+    .opt-letter {
+      font-weight: 800; min-width: 26px; height: 26px; border-radius: 7px;
+      background: #f1f5f9; color: #334155; display: inline-flex;
+      align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;
+    }
+    /* Practice Mode States */
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.correct .opt-letter { background: var(--correct-border); color: #fff; }
+    .opt-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+    .opt-btn.wrong .opt-letter { background: var(--wrong-border); color: #fff; }
+    /* Test Mode State */
+    .opt-btn.selected-test { background: var(--selected-bg); border-color: var(--selected-border); font-weight: 600; }
+    .opt-btn.selected-test .opt-letter { background: var(--ai-red); color: #fff; }
+
+    .feedback-banner {
+      margin-top: 14px; padding: 11px 13px; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600; display: none; line-height: 1.4;
+    }
+
+    /* Bottom Navigation */
+    .nav-row { display: flex; gap: 10px; margin-top: 8px; }
+    .nav-btn {
+      flex: 1; padding: 13px; border-radius: 12px; font-size: 0.95rem;
+      font-weight: 700; cursor: pointer; border: none;
+    }
+    .btn-secondary { background: #e2e8f0; color: var(--text); }
+    .btn-Secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary { background: var(--ai-red); color: #fff; }
+    .btn-submit-test {
+      width: 100%; margin-top: 12px; padding: 13px; border-radius: 12px;
+      background: #0f172a; color: #fff; font-size: 0.92rem; font-weight: 700;
+      border: none; cursor: pointer;
+    }
+
+    /* Results Screen */
+    .score-card {
+      background: var(--card); border-radius: 16px; padding: 22px 18px;
+      text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.06); margin-bottom: 16px;
+    }
+    .pass-badge {
+      display: inline-block; padding: 5px 12px; border-radius: 99px;
+      font-size: 0.78rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .score-big { font-size: 2.6rem; font-weight: 900; color: var(--text); line-height: 1.1; }
+    .score-sub { font-size: 0.9rem; color: var(--muted); margin-top: 4px; margin-bottom: 16px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+    .stat-box { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
+    .stat-num { font-size: 1.15rem; font-weight: 800; }
+    .stat-lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-top: 2px; }
+
+    .action-stack { display: flex; flex-direction: column; gap: 10px; }
+    .review-filter-bar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin: 16px 0 12px; }
+    .rf-btn {
+      padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: #fff; font-size: 0.8rem; font-weight: 700; white-space: nowrap; cursor: pointer;
+    }
+    .rf-btn.active { background: var(--ai-red); color: #fff; border-color: var(--ai-red); }
+    .review-item {
+      background: var(--card); border-radius: 12px; padding: 15px;
+      margin-bottom: 10px; border-left: 5px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .review-item.r-correct { border-left-color: var(--correct-border); }
+    .review-item.r-wrong { border-left-color: var(--wrong-border); }
+    .review-item.r-skipped { border-left-color: #f59e0b; }
+
+    /* Question Palette Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.55);
+      display: none; align-items: flex-end; justify-content: center; z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      background: #fff; width: 100%; max-width: 640px; max-height: 80vh;
+      border-radius: 20px 20px 0 0; padding: 18px; display: flex; flex-direction: column;
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .palette-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.75rem; color: var(--muted); margin-bottom: 12px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 4px; }
+    .p-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+      gap: 8px; overflow-y: auto; padding: 4px 2px;
+    }
+    .p-cell {
+      height: 40px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+    }
+    .p-cell.current { outline: 2px solid #0f172a; }
+    .p-cell.p-ans { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+    .p-cell.p-correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+    .p-cell.p-wrong { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+    .p-cell.p-flag { background: #f3e8ff; border-color: var(--review-color); color: var(--review-color); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand" onclick="confirmHome()" style="cursor:pointer;">
+    <h1>✈️ Air India Crew Assessment</h1>
+    <p>SEP • ESEL (A320neo RT) & Medical First Aid • Made with ❤️ by Abhi</p>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="shareQuiz()">📤 Share</button>
+    <button class="icon-btn" id="homeHeaderBtn" onclick="confirmHome()" style="display:none;">🏠 Home</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- SCREEN 1: HOME / MODE SELECTION -->
+  <div id="homeScreen" class="screen active">
+    <div class="hero-card">
+      <div class="hero-title">Select Assessment Mode</div>
+      <div class="hero-sub">Practice with instant answer checks or take a timed CBT examination with a full scorecard at the end.</div>
+
+      <div class="mode-grid">
+        <div class="mode-card selected" id="modePracticeCard" onclick="selectMode('practice')">
+          <span class="m-icon">📖</span>
+          <span class="m-title">Practice Mode</span>
+          <span class="m-desc">Instant green/red answer reveal, untimed learning & free navigation.</span>
+        </div>
+        <div class="mode-card" id="modeTestCard" onclick="selectMode('test')">
+          <span class="m-icon">⏱️</span>
+          <span class="m-title">Test Mode</span>
+          <span class="m-desc">Timed exam, locked feedback until submission & detailed final scorecard.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Question Bank / Topic</label>
+        <select id="topicSelect" class="form-select">
+          <option value="all">Full Bank — All 150 Questions</option>
+          <option value="med">Medicines, Emergencies & First Aid (Q1–Q100)</option>
+          <option value="esel">A320neo (RT Series) ESEL Circular (Q101–Q150)</option>
+          <option value="mock25">Quick Mock Test — 25 Random Questions</option>
+          <option value="mock50">Standard Mock Test — 50 Random Questions</option>
+        </select>
+      </div>
+
+      <label class="toggle-row">
+        <span>🔀 Shuffle Question Order</span>
+        <input type="checkbox" id="shuffleToggle" />
+      </label>
+
+      <button class="primary-btn" onclick="startSession()">Start Assessment →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: ACTIVE QUIZ / EXAM -->
+  <div id="quizScreen" class="screen">
+    <div class="quiz-topbar">
+      <span id="activeModeBadge" class="mode-pill pill-practice">Practice Mode</span>
+      <span id="timerDisplay" class="timer-box">00:00</span>
+      <button class="palette-btn" onclick="togglePalette(true)">🔢 Grid (<span id="answeredCountTxt">0/150</span>)</button>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="qProgressTxt">Question 1 of 150</span>
+        <span id="liveScoreTxt">Score: 0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressBarFill"></div></div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header">
+        <span class="cat-badge" id="qCatBadge">Q1 • Medical</span>
+        <button class="review-flag" id="flagBtn" onclick="toggleFlag()">🚩 Mark for Review</button>
+      </div>
+      <div class="q-text" id="qTextDisplay"></div>
+      <div class="options-list" id="optionsContainer"></div>
+      <div class="feedback-banner" id="practiceFeedback"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn btn-secondary" id="prevBtn" onclick="goPrev()">← Prev</button>
+      <button class="nav-btn btn-primary" id="nextBtn" onclick="goNext()">Next →</button>
+    </div>
+
+    <button class="btn-submit-test" id="finishBtn" onclick="confirmFinish()">Submit & View Scorecard</button>
+  </div>
+
+  <!-- SCREEN 3: SCORECARD & REVIEW -->
+  <div id="resultScreen" class="screen">
+    <div class="score-card">
+      <span id="passFailBadge" class="pass-badge">COMPLETED</span>
+      <div class="score-big" id="finalPctTxt">0%</div>
+      <div class="score-sub" id="finalFractionTxt">You scored 0 out of 150</div>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-num" style="color:#16a34a" id="resCorrect">0</div>
+          <div class="stat-lbl">Correct</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" style="color:#dc2626" id="resWrong">0</div>
+          <div class="stat-lbl">Incorrect</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" style="color:#d97706" id="resSkipped">0</div>
+          <div class="stat-lbl">Unanswered</div>
+        </div>
+      </div>
+
+      <div class="action-stack">
+        <button class="primary-btn" id="retryWrongBtn" onclick="retryWrongOnly()" style="display:none; background:#dc2626;">🔁 Retry Incorrect & Skipped Questions</button>
+        <button class="nav-btn btn-secondary" onclick="showHome()">🏠 Back to Main Menu</button>
+      </div>
+    </div>
+
+    <div class="review-filter-bar">
+      <button class="rf-btn active" onclick="renderReviewList('all', this)">All Questions</button>
+      <button class="rf-btn" onclick="renderReviewList('wrong', this)">❌ Incorrect</button>
+      <button class="rf-btn" onclick="renderReviewList('skipped', this)">⚠️ Unanswered</button>
+      <button class="rf-btn" onclick="renderReviewList('correct', this)">✅ Correct</button>
+    </div>
+
+    <div id="reviewListContainer"></div>
+  </div>
+
+</div>
+
+<!-- QUESTION PALETTE DRAWER -->
+<div class="modal-overlay" id="paletteModal" onclick="if(event.target===this)togglePalette(false)">
+  <div class="modal-sheet">
+    <div class="modal-head">
+      <h3 style="font-size:1rem;font-weight:800;">Question Navigator</h3>
+      <button class="palette-btn" onclick="togglePalette(false)">✕ Close</button>
+    </div>
+    <div class="palette-legend">
+      <span><i class="legend-dot" style="background:#3b82f6"></i>Answered</span>
+      <span><i class="legend-dot" style="background:#7c3aed"></i>Marked for Review</span>
+      <span><i class="legend-dot" style="background:#e2e8f0"></i>Not Visited</span>
+    </div>
+    <div class="p-grid" id="paletteGrid"></div>
+  </div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  {id:1, cat:"med", q:"Which medicine is commonly used to relieve mild pain and fever?", o:["Diazepam","Paracetamol","Adrenaline","Atropine"], a:1},
+  {id:2, cat:"med", q:"Why should aspirin generally not be given to children unless specifically directed by a qualified clinician?", o:["It always causes dehydration","It may be associated with Reye’s syndrome","It always causes unconsciousness","It increases body temperature"], a:1},
+  {id:3, cat:"med", q:"What is GTN (Glyceryl Trinitrate) primarily used for?", o:["Allergic reactions","Angina-related chest pain","Motion sickness","Fever"], a:1},
+  {id:4, cat:"med", q:"Which medicine is the first-line treatment for anaphylaxis?", o:["Paracetamol","Aspirin","Adrenaline (epinephrine)","Antacid"], a:2},
+  {id:5, cat:"med", q:"Oral glucose is commonly used to treat which condition?", o:["Hypertension","Hypoglycaemia","High cholesterol","Fever"], a:1},
+  {id:6, cat:"med", q:"Which medicine is commonly used as a bronchodilator for asthma symptoms?", o:["Salbutamol","Aspirin","GTN","Paracetamol"], a:0},
+  {id:7, cat:"med", q:"What is the primary purpose of an antihistamine?", o:["To treat certain allergic symptoms","To perform CPR","To increase blood glucose","To treat cardiac arrest"], a:0},
+  {id:8, cat:"med", q:"Which medicine is commonly used to relieve acid indigestion?", o:["Antacid","Adrenaline","GTN","Insulin"], a:0},
+  {id:9, cat:"med", q:"What is the purpose of insulin?", o:["To increase blood glucose","To lower blood glucose","To treat fever","To relieve chest pain"], a:1},
+  {id:10, cat:"med", q:"Which medicine is used to treat severe allergic reactions in an emergency?", o:["Adrenaline","Paracetamol","Antacid","Oral glucose"], a:0},
+  {id:11, cat:"med", q:"Which medicine is commonly associated with the treatment of angina?", o:["GTN","Salbutamol","Antacid","Oral glucose"], a:0},
+  {id:12, cat:"med", q:"Which of the following is a common analgesic (pain-relieving medicine)?", o:["Paracetamol","Insulin","Adrenaline","Salbutamol"], a:0},
+  {id:13, cat:"med", q:"Which medicine may be prescribed for the prevention or treatment of motion sickness?", o:["An appropriate antiemetic","Insulin","Adrenaline in every case","GTN"], a:0},
+  {id:14, cat:"med", q:"Which medicine is used to treat low blood glucose in a conscious person who can swallow safely?", o:["Oral glucose","GTN","Aspirin","Antacid"], a:0},
+  {id:15, cat:"med", q:"Which statement about medicines carried onboard is correct?", o:["Every aircraft carries exactly the same medicines","Medicines should be used according to approved kit contents and procedures","Any medicine can be substituted for another","Expiry dates are unimportant"], a:1},
+  {id:16, cat:"med", q:"What should cabin crew do before assisting with medication?", o:["Guess the dose","Check the passenger’s condition, allergies, medication history and applicable procedures","Give the medicine immediately","Ask another passenger to select the medicine"], a:1},
+  {id:17, cat:"med", q:"What should be done with expired medicine?", o:["Use it if it looks normal","Use half the usual dose","Do not use it; follow company procedures","Mix it with water"], a:2},
+  {id:18, cat:"med", q:"A passenger reports an allergy to a particular medicine. What should you do?", o:["Give a smaller dose","Ignore the allergy","Avoid the suspected medicine and seek appropriate guidance","Give two medicines together"], a:2},
+  {id:19, cat:"med", q:"Why must the correct dose be checked?", o:["To make the medicine work instantly","To reduce medication errors and harm","To avoid documentation","To shorten the flight"], a:1},
+  {id:20, cat:"med", q:"What should cabin crew do if unsure about a medicine or its dosage?", o:["Guess","Give the adult dose to everyone","Seek qualified medical guidance and follow approved procedures","Double the dose"], a:2},
+  {id:21, cat:"med", q:"Why should medicine packaging and labels be checked?", o:["To identify the medicine and verify relevant instructions and expiry","To determine the passenger’s seat","To assess the passenger’s nationality","To decide the meal service"], a:0},
+  {id:22, cat:"med", q:"What should be done if the identity of a medicine is uncertain?", o:["Use it based on its colour","Smell it to identify it","Do not administer it until appropriately identified","Ask the passenger to guess"], a:2},
+  {id:23, cat:"med", q:"What is an adverse drug reaction?", o:["An unwanted or harmful response to a medicine","A passenger changing seats","A delayed meal service","A normal cabin pressure change"], a:0},
+  {id:24, cat:"med", q:"What should cabin crew do if a passenger develops a suspected serious reaction after taking medication?", o:["Ignore the symptoms","Assess the passenger, obtain medical assistance and follow emergency procedures","Give another random medicine","Leave the passenger alone"], a:1},
+  {id:25, cat:"med", q:"Which information is important when documenting medicine administration?", o:["Passenger’s favourite food","Medicine details, time, relevant observations and response, as required","Cabin temperature only","Passenger’s entertainment choice"], a:1},
+  {id:26, cat:"med", q:"What should cabin crew do if a passenger refuses medication?", o:["Force the passenger to take it","Hide it in food","Respect the refusal where appropriate, explain concerns and follow reporting procedures","Ignore the passenger completely"], a:2},
+  {id:27, cat:"med", q:"What is the safest approach when a child requires medication onboard?", o:["Automatically give an adult dose","Estimate the dose","Follow approved age-appropriate instructions and obtain appropriate medical guidance","Give multiple medicines together"], a:2},
+  {id:28, cat:"med", q:"Why is checking a passenger’s medication history useful?", o:["It may reveal contraindications, interactions or relevant medical conditions","It determines the passenger’s meal","It replaces the need for assessment","It guarantees the passenger is healthy"], a:0},
+  {id:29, cat:"med", q:"What should be done if medication packaging is damaged and the contents cannot be verified?", o:["Use the medicine anyway","Do not use it and follow company procedures","Transfer it to an unlabelled container","Mix it with another medicine"], a:1},
+  {id:30, cat:"med", q:"What is the safest rule regarding medication administration by cabin crew?", o:["Administer any medicine requested","Follow the airline’s approved scope of practice and procedures","Prescribe medicines independently","Ignore medical guidance"], a:1},
+  {id:31, cat:"med", q:"A passenger develops swelling of the lips and difficulty breathing after eating. What should you suspect?", o:["Motion sickness","Anaphylaxis","Mild dehydration","Ear pressure discomfort"], a:1},
+  {id:32, cat:"med", q:"What is the first-line medicine for suspected anaphylaxis?", o:["Paracetamol","Adrenaline","Antacid","GTN"], a:1},
+  {id:33, cat:"med", q:"A passenger complains of severe chest pain and sweating. What should cabin crew do?", o:["Assume it is indigestion","Assess the passenger, alert the senior crew member and obtain medical assistance","Encourage vigorous walking","Ignore the symptoms until landing"], a:1},
+  {id:34, cat:"med", q:"Which symptoms may indicate a stroke?", o:["Sudden facial drooping, arm weakness or speech difficulty","Mild hunger","Itchy fingers only","Gradual nail growth"], a:0},
+  {id:35, cat:"med", q:"A passenger collapses and is unresponsive. What should you assess immediately?", o:["Their meal preference","Their responsiveness and breathing","Their luggage","Their ticket class"], a:1},
+  {id:36, cat:"med", q:"An unresponsive passenger is not breathing normally. What should cabin crew do?", o:["Give oral glucose","Give water","Activate the emergency response, start CPR and use an AED as soon as available","Wait for the passenger to wake up"], a:2},
+  {id:37, cat:"med", q:"What is the purpose of an AED?", o:["To measure body temperature","To analyse heart rhythm and deliver a shock when indicated","To provide oral medication","To treat dehydration"], a:1},
+  {id:38, cat:"med", q:"Which condition is characterised by abnormally low blood glucose?", o:["Hypoglycaemia","Hyperglycaemia","Hypertension","Hypothermia"], a:0},
+  {id:39, cat:"med", q:"Which signs may indicate hypoglycaemia?", o:["Sweating, shaking, confusion and weakness","Improved concentration only","Gradual nail growth","Mild thirst without other symptoms"], a:0},
+  {id:40, cat:"med", q:"A conscious passenger with suspected hypoglycaemia can swallow safely. What may be appropriate?", o:["Oral glucose or fast-acting carbohydrate according to approved procedures","Water forced into the mouth","Insulin without assessment","Nothing under any circumstances"], a:0},
+  {id:41, cat:"med", q:"What must never be given orally to an unconscious passenger?", o:["Oral glucose","Water","Food","All of the above"], a:3},
+  {id:42, cat:"med", q:"What is an appropriate response to a passenger having a seizure?", o:["Restrain their limbs tightly","Put an object in their mouth","Protect them from hazards, time the seizure and obtain assistance","Give oral medicine during the seizure"], a:2},
+  {id:43, cat:"med", q:"What should cabin crew do after a seizure ends if the passenger is breathing normally but remains unresponsive?", o:["Give food immediately","Follow approved recovery-position and monitoring procedures","Force them to stand","Leave them alone"], a:1},
+  {id:44, cat:"med", q:"Which finding may indicate shock?", o:["Pale, cold, clammy skin and weakness","Normal appetite","Improved alertness","Normal breathing and no symptoms"], a:0},
+  {id:45, cat:"med", q:"What is the correct response to severe breathing difficulty?", o:["Leave the passenger unattended","Assess breathing, call for assistance and follow emergency procedures","Give water immediately","Ask the passenger to walk quickly"], a:1},
+  {id:46, cat:"med", q:"What is the purpose of supplemental oxygen in a medical emergency?", o:["To treat every illness regardless of symptoms","To help manage suspected hypoxia when indicated","To replace CPR","To cure fever"], a:1},
+  {id:47, cat:"med", q:"Does oxygen replace CPR in a passenger who is unresponsive and not breathing normally?", o:["Yes, always","No, CPR and AED use are required according to emergency procedures","Yes, if the passenger is an adult","Yes, if the flight is short"], a:1},
+  {id:48, cat:"med", q:"What should cabin crew do before using onboard oxygen equipment?", o:["Ignore the equipment instructions","Follow approved training and operating procedures","Allow untrained passengers to operate it without guidance","Use any available cylinder without checking"], a:1},
+  {id:49, cat:"med", q:"What is the primary purpose of CPR?", o:["To maintain circulation and oxygen delivery during cardiac arrest","To reduce fever","To treat motion sickness","To increase appetite"], a:0},
+  {id:50, cat:"med", q:"When should an AED be used?", o:["On every passenger with a headache","As soon as available for a suspected cardiac arrest, following its prompts","Only after landing","On every passenger who feels dizzy"], a:1},
+  {id:51, cat:"med", q:"What should you do if a passenger is choking but can cough forcefully?", o:["Encourage coughing and monitor them","Immediately give water","Put your fingers blindly into the mouth","Make them lie flat"], a:0},
+  {id:52, cat:"med", q:"What should be done if a conscious adult has severe airway obstruction and cannot speak, cough or breathe effectively?", o:["Give food","Apply appropriate choking first aid according to training","Leave them alone","Offer a sleeping tablet"], a:1},
+  {id:53, cat:"med", q:"What is the safest response to a minor burn?", o:["Apply ice directly","Cool the burn with cool running water when available and follow first-aid procedures","Break any blisters","Apply random medication"], a:1},
+  {id:54, cat:"med", q:"What should be done for severe external bleeding?", o:["Apply direct pressure using suitable dressing material","Wash the wound for 30 minutes before acting","Ignore the bleeding","Give oral medication only"], a:0},
+  {id:55, cat:"med", q:"What should cabin crew do if a fracture is suspected?", o:["Force the limb straight","Encourage the passenger to walk","Support and immobilise the injured area as appropriate and seek assistance","Massage the injury vigorously"], a:2},
+  {id:56, cat:"med", q:"What is an appropriate first-aid response to a fainting passenger who recovers quickly?", o:["Immediately make them run","Assess them, keep them safe and monitor for recurrence or warning signs","Give medication without assessment","Ignore the event"], a:1},
+  {id:57, cat:"med", q:"What should be done if a passenger is suspected of having a spinal injury?", o:["Move them unnecessarily","Minimise movement and obtain trained assistance","Pull them up by the arms","Ask them to twist their neck"], a:1},
+  {id:58, cat:"med", q:"Which action is appropriate for a nosebleed?", o:["Tilt the head backwards","Lean forward and pinch the soft part of the nose","Lie flat with the head tilted back","Blow the nose forcefully"], a:1},
+  {id:59, cat:"med", q:"What should cabin crew do if a passenger shows signs of heat-related illness?", o:["Ignore the symptoms","Assess the passenger, move them to a safer environment when possible and obtain assistance","Cover them with multiple heavy blankets regardless of symptoms","Encourage strenuous activity"], a:1},
+  {id:60, cat:"med", q:"What should cabin crew do when a passenger suddenly becomes seriously ill?", o:["Wait for another passenger to act","Follow the emergency response process, communicate with the senior crew member and obtain medical assistance","Administer a random medicine","Keep the incident secret"], a:1},
+  {id:61, cat:"med", q:"What is motion sickness commonly associated with?", o:["Nausea, dizziness and sometimes vomiting","Facial paralysis in every case","Broken bones","Severe bleeding"], a:0},
+  {id:62, cat:"med", q:"What can help a passenger experiencing mild motion sickness?", o:["Follow appropriate comfort measures and airline procedures","Encourage rapid head movements","Give an unverified medicine","Make the passenger stand continuously"], a:0},
+  {id:63, cat:"med", q:"Which symptoms may suggest dehydration?", o:["Thirst, dry mouth and reduced urine output","Sudden improvement in vision","Increased appetite alone","Hair growth"], a:0},
+  {id:64, cat:"med", q:"A passenger reports severe abdominal pain. What should cabin crew do?", o:["Assume it is harmless","Assess the passenger and obtain appropriate medical guidance","Give multiple painkillers immediately","Encourage vigorous exercise"], a:1},
+  {id:65, cat:"med", q:"Which symptoms may indicate a heart attack?", o:["Chest pressure or pain, sweating and shortness of breath","Mild hunger only","Itchy skin alone","A small bruise"], a:0},
+  {id:66, cat:"med", q:"What should be suspected if a passenger develops sudden one-sided weakness and difficulty speaking?", o:["Stroke","Motion sickness only","Mild indigestion","Earwax blockage"], a:0},
+  {id:67, cat:"med", q:"What is an important action when a passenger has a suspected stroke?", o:["Record when symptoms began or when they were last known well, if possible, and obtain urgent medical assistance","Wait several hours","Give food immediately","Encourage them to walk"], a:0},
+  {id:68, cat:"med", q:"A passenger reports severe shortness of breath. What should you do?", o:["Assess the passenger and seek urgent medical assistance","Assume anxiety without assessment","Give food","Ask them to walk around"], a:0},
+  {id:69, cat:"med", q:"Which is a common sign of an asthma attack?", o:["Wheezing and breathing difficulty","Broken fingernails","Toothache","Hair loss"], a:0},
+  {id:70, cat:"med", q:"What should cabin crew do if a passenger uses their own prescribed inhaler during an asthma attack?", o:["Automatically confiscate it","Assist appropriately within training and company procedures, and assess whether further help is needed","Replace it with GTN","Tell the passenger to stop breathing deeply"], a:1},
+  {id:71, cat:"med", q:"Which condition can cause sudden confusion, sweating and shaking in a person with diabetes?", o:["Hypoglycaemia","A minor bruise","Ear pressure","Tooth decay"], a:0},
+  {id:72, cat:"med", q:"What should be done if a passenger is vomiting repeatedly?", o:["Assess their condition, protect against aspiration where appropriate and seek medical assistance if needed","Force them to drink large amounts quickly","Ignore the symptoms","Give any available medication"], a:0},
+  {id:73, cat:"med", q:"What should cabin crew do if a passenger has a high fever and appears confused?", o:["Treat it as an emergency warning sign and seek medical assistance","Assume it is normal","Give multiple medicines without assessment","Leave them unattended"], a:0},
+  {id:74, cat:"med", q:"Which of the following may indicate a severe allergic reaction?", o:["Difficulty breathing and swelling of the tongue","Mild hunger","A small painless bruise","Normal blinking"], a:0},
+  {id:75, cat:"med", q:"What should cabin crew do if a passenger reports new severe chest pain after taking medication?", o:["Ignore it because medication was taken","Reassess the passenger and obtain urgent medical assistance","Give another dose automatically","Ask the passenger to sleep"], a:1},
+  {id:76, cat:"med", q:"Why should onboard medical kits be checked according to company procedures?", o:["To ensure required contents are available and usable","To remove all medicines","To replace approved supplies with personal items","To avoid safety inspections"], a:0},
+  {id:77, cat:"med", q:"What should cabin crew do if a required item is missing from a medical kit?", o:["Ignore it","Report it and follow the airline’s procedures","Replace it with any similar-looking item","Hide the shortage"], a:1},
+  {id:78, cat:"med", q:"What should be done after using medical-kit supplies?", o:["Leave the kit disorganised","Record usage and arrange replenishment according to procedures","Discard the entire kit","Keep the use secret"], a:1},
+  {id:79, cat:"med", q:"What is the purpose of an onboard medical incident report?", o:["To document relevant facts, actions and outcomes","To assign blame automatically","To replace emergency care","To record passenger entertainment preferences"], a:0},
+  {id:80, cat:"med", q:"Which details are most relevant to a medical incident report?", o:["Time, symptoms, observations, assistance provided and response","Seat colour and meal preference","Cabin music selection","Shopping purchases"], a:0},
+  {id:81, cat:"med", q:"Why should observations be recorded accurately?", o:["They can support clinical assessment and continuity of care","They guarantee a diagnosis","They eliminate the need for medical assistance","They replace company SOPs"], a:0},
+  {id:82, cat:"med", q:"What should cabin crew do when a medically qualified passenger volunteers to assist?", o:["Automatically hand over all cabin responsibilities","Coordinate assistance appropriately while following company procedures and retaining crew responsibilities","Allow the volunteer to ignore all safety requirements","Refuse all assistance in every circumstance"], a:1},
+  {id:83, cat:"med", q:"Why might ground-based medical support be contacted during a flight?", o:["To obtain appropriate clinical guidance for a medical situation","To select passenger meals","To approve entertainment choices","To avoid documenting an incident"], a:0},
+  {id:84, cat:"med", q:"What should cabin crew do after handing over a passenger to medical professionals?", o:["Provide a relevant factual handover and complete required documentation","Delete all notes","Leave without communicating relevant information","Guess the final diagnosis"], a:0},
+  {id:85, cat:"med", q:"What is the best approach to patient confidentiality?", o:["Share details with everyone onboard","Share relevant information only with appropriate people for legitimate operational or medical purposes","Post the passenger’s details online","Announce all medical details to the cabin unnecessarily"], a:1},
+  {id:86, cat:"med", q:"A passenger complains of severe chest pain. What is the best immediate response?", o:["Assume it is indigestion","Assess, alert the senior crew member, obtain medical assistance and follow approved procedures","Encourage exercise","Give any available painkiller"], a:1},
+  {id:87, cat:"med", q:"A child develops a high fever during flight. What should cabin crew do?", o:["Automatically give an adult medicine dose","Assess the child and seek appropriate medical guidance, following approved procedures","Give aspirin without checking","Ignore the fever"], a:1},
+  {id:88, cat:"med", q:"A passenger develops facial swelling and breathing difficulty. What is the priority?", o:["Offer a snack","Treat suspected anaphylaxis as an emergency and follow approved treatment procedures","Wait for the symptoms to disappear","Ask the passenger to walk"], a:1},
+  {id:89, cat:"med", q:"A passenger with diabetes becomes confused and sweaty. What should you do first?", o:["Assess responsiveness and safety, suspect hypoglycaemia and follow the emergency procedure","Give insulin automatically","Give oral food regardless of consciousness","Leave them alone"], a:0},
+  {id:90, cat:"med", q:"An unresponsive passenger is not breathing normally. What should happen next?", o:["Give water","Activate the emergency response, start CPR and use an AED as soon as available","Wait for landing","Give oral medication"], a:1},
+  {id:91, cat:"med", q:"A passenger requests a painkiller but cannot remember which medicine causes their allergy. What is the safest response?", o:["Give any painkiller","Give a double dose of paracetamol","Avoid unverified medication and seek appropriate guidance","Mix two painkillers"], a:2},
+  {id:92, cat:"med", q:"A passenger is having an asthma attack and struggling to breathe. What should cabin crew do?", o:["Assess the passenger, assist appropriately with prescribed treatment within approved procedures and obtain medical assistance","Give GTN automatically","Encourage vigorous walking","Ignore the symptoms"], a:0},
+  {id:93, cat:"med", q:"A passenger has a seizure. Which action should be avoided?", o:["Protecting the passenger from nearby hazards","Timing the seizure","Putting an object in the passenger’s mouth","Seeking medical assistance when indicated"], a:2},
+  {id:94, cat:"med", q:"A passenger refuses treatment but appears seriously unwell. What is the appropriate response?", o:["Force treatment in every circumstance","Respect the refusal where appropriate, assess decision-making capacity through approved procedures and seek guidance","Ignore the passenger","Hide medication in food"], a:1},
+  {id:95, cat:"med", q:"You discover expired medicine in the onboard medical kit. What should you do?", o:["Use it for minor symptoms","Use it if the colour looks correct","Follow company procedures for reporting and replacement; do not administer it","Remove its label"], a:2},
+  {id:96, cat:"med", q:"After assisting an unwell passenger, what is the best reporting practice?", o:["Record relevant symptoms, observations, times, interventions and outcomes according to procedure","Record only the passenger’s name","Record nothing if the passenger improves","Record an assumed diagnosis as fact"], a:0},
+  {id:97, cat:"med", q:"A passenger suddenly faints but wakes shortly afterwards. What should cabin crew do?", o:["Assume nothing is wrong","Assess and monitor the passenger, identify warning signs and seek assistance as indicated","Immediately make them stand","Give medication without assessment"], a:1},
+  {id:98, cat:"med", q:"A passenger has severe external bleeding from an injury. What should cabin crew do?", o:["Apply appropriate direct pressure and obtain medical assistance","Wait until landing before acting","Give oral medication only","Encourage the passenger to walk"], a:0},
+  {id:99, cat:"med", q:"A passenger may be experiencing a stroke. Which information is particularly useful to report?", o:["The time symptoms started or when the passenger was last known well","The passenger’s preferred meal","The passenger’s shopping history","The time the movie started"], a:0},
+  {id:100, cat:"med", q:"What is the most important overall principle when managing an onboard medical emergency?", o:["Administer medication before assessing the passenger","Follow approved procedures, assess the passenger, obtain appropriate assistance and document the incident","Wait until the aircraft lands before acting","Allow untrained people to make all decisions"], a:1},
+
+  // --- A320NEO (RT SERIES) ESEL REVISION & EQUIPMENT (101-150) ---
+  {id:101, cat:"esel", q:"What is the Circular Number for the Cabin Safety Circular regarding the ESEL Revision for the A320 Neo (RT Series)?", o:["AI/CST/SEP/2025/027","AI/CST/SEP/2026/23","A320-A-030","348000010"], a:1},
+  {id:102, cat:"esel", q:"What are the Issue Date and Effective Date of Circular AI/CST/SEP/2026/23?", o:["Issue Date: 08-MAY-26; Effective Date: 24-MAY-26","Issue Date: 24-MAY-26; Effective Date: 25-MAY-26","Issue Date: 25-MAY-26; Effective Date: 24-NOV-26","Issue Date: 24-MAY-26; Effective Date: 24-MAY-26"], a:1},
+  {id:103, cat:"esel", q:"Until what date is Circular AI/CST/SEP/2026/23 valid?", o:["24-NOV-26","25-DEC-26","24-MAY-27","08-MAY-27"], a:0},
+  {id:104, cat:"esel", q:"To which crew members is Circular AI/CST/SEP/2026/23 applicable?", o:["Cabin Crew only","Flight Crew only","Both Flight Crew and Cabin Crew","Ground Maintenance Crew only"], a:2},
+  {id:105, cat:"esel", q:"Under which Type and Category is Circular AI/CST/SEP/2026/23 classified?", o:["Type: OPS; Category: Time Critical","Type: SEP; Category: Time Sensitive","Type: TRG; Category: Frequently Used Reference","Type: TECH; Category: Time Sensitive"], a:1},
+  {id:106, cat:"esel", q:"Must Circular AI/CST/SEP/2026/23 be carried by Cabin Crew?", o:["No, it is only for digital reference on DocuNet","Yes, Cabin Crew must collect a hard copy along with the attached ESEL and carry it in their Quick Reference Handbooks (QRH)","Only the In-Flight Manager must carry it","Only during international flights"], a:1},
+  {id:107, cat:"esel", q:"What is the stated reason for issuing Circular AI/CST/SEP/2026/23?", o:["Addition of new passenger seats in Economy Class","Document revised to reflect changes in Equipment Location","Introduction of a new aircraft type (A350)","Replacement of all Halon fire extinguishers"], a:1},
+  {id:108, cat:"esel", q:"Which previous circular does AI/CST/SEP/2026/23 partially supersede for the RT Series?", o:["AI/CST/SEP/2025/027","AI/CST/SEP/2024/015","AI/CST/OPS/2026/01","None, it does not affect any previous circular"], a:0},
+  {id:109, cat:"esel", q:"What was the EXISTING location of the Fire Containment Kit (X-Bag) on the A320 RT Series prior to this revision?", o:["S1-201 Compartment (Near L1 Door)","29DEF Overhead Bin (Aftmost RH Bin)","OVHD Bin C20-C21","S2-221 Compartment"], a:1},
+  {id:110, cat:"esel", q:"What is the REVISED location of the cabin Fire Containment Kit (X-Bag) on the A320 RT Series?", o:["29DEF Overhead Bin (Aftmost RH Bin)","S1-201 Compartment (Near L1 Door)","Cockpit Stowage","OVHD Bin C64-C65"], a:1},
+  {id:111, cat:"esel", q:"How many A320neo (A320-251N) aircraft registrations are covered under this RT Series ESEL revision?", o:["10","12","14","16"], a:2},
+  {id:112, cat:"esel", q:"Which of the following aircraft registrations is included in the A320 RT Series ESEL revision list alongside the VT-RT* aircraft?", o:["VT-EXA","VT-RIO","VT-CIQ","VT-TQA"], a:1},
+  {id:113, cat:"esel", q:"How is the transition to the revised ESEL managed on DocuNet while equipment is progressively updated across the fleet?", o:["Only the old ESEL is shown until all aircraft are updated","Only the new ESEL is shown immediately, and the old version is deleted right away","Both the current and revised ESEL versions remain available on DocuNet until all aircraft are updated, after which the previous version will be removed","Neither version is available on DocuNet during transition"], a:2},
+  {id:114, cat:"esel", q:"What is the navigation path on DocuNet to access the updated ESELs?", o:["Open DocuNet → Flight Operations → QRH → ESEL","Open DocuNet → Cabin Safety → Training Reference Documents → ESEL → Select Fleet","Open DocuNet → Maintenance → CAMO → Drawings","Open DocuNet → Admin → Circulars → A320"], a:1},
+  {id:115, cat:"esel", q:"How does this circular apply to Flight Crew?", o:["Flight Crew must carry a hard copy in their flight bag","It serves as informatory to Flight Crew and can be referred to on DocuNet","It does not apply to Flight Crew at all","Flight Crew must sign a physical logbook before each flight"], a:1},
+  {id:116, cat:"esel", q:"Which manual will incorporate Circular AI/CST/SEP/2026/23 in due course?", o:["Operations Manual Part A (OM-A)","SEP Manual","Aircraft Maintenance Manual (AMM)","Cabin Service Manual"], a:1},
+  {id:117, cat:"esel", q:"Who prepared, reviewed, and approved Circular AI/CST/SEP/2026/23?", o:["Prepared by: Omkar Raut; Reviewed by: Nikita Thakur; Approved by: Hemant Jindal","Prepared by: Mr. Sudeep Kumar (SEP Instructor); Reviewed by: Ms. Priti Bhowmik (CSTM); Approved by: Capt. Manish Uppal (Director Flight Operations)","Prepared by: Ms. Priti Bhowmik; Reviewed by: Mr. Sudeep Kumar; Approved by: Hemant Jindal","Prepared by: Capt. Manish Uppal; Reviewed by: Mr. Sudeep Kumar; Approved by: Ms. Priti Bhowmik"], a:1},
+  {id:118, cat:"esel", q:"What is the total number of Passenger Life Vests onboard the A320-251N (RT Series), and where are they located?", o:["150, located in overhead bins","164, one located with each passenger seat","180, one located with each passenger seat","164, located in forward and aft stowage compartments"], a:1},
+  {id:119, cat:"esel", q:"What is the total number of Crew Life Vests onboard, and how are they distributed?", o:["08 total: 06 under jump seats + 02 in cockpit","09 total: 06 located under each jump seat + 03 in cockpit","06 total: all under cabin jump seats","10 total: 08 in cabin + 02 in cockpit"], a:1},
+  {id:120, cat:"esel", q:"How many Spare Life Vests are carried onboard the A320-251N (RT Series)?", o:["05","08","10","12"], a:1},
+  {id:121, cat:"esel", q:"How are the 08 Spare Life Vests distributed in the forward stowage compartments?", o:["04 in S1 Comp 201 and 04 in S2 Comp 201","03 in Stowage S1 Comp 201 and 05 in Stowage S2 Comp 201","All 08 in Stowage S2 Comp 221","06 in S1 Comp 201 and 02 in cockpit"], a:1},
+  {id:122, cat:"esel", q:"What is the total quantity of Infant Life Vests onboard, and where are they stowed?", o:["08, in Stowage S2 Comp 201","10, in OVHD Bin with Partition Fwd Box C38-C43","10, in OVHD Bin C20-C21","05, in OVHD Bin C64-C65"], a:1},
+  {id:123, cat:"esel", q:"What is the total number of Infant Seat Belts onboard, and what is their cabin class breakdown?", o:["10 total: Business Class (02), Premium Economy Class (03), Economy Class (05)","10 total: Business Class (01), Premium Economy Class (02), Economy Class (07)","05 total: Business Class (01), Premium Economy Class (01), Economy Class (03)","12 total: Business Class (04), Premium Economy Class (04), Economy Class (04)"], a:0},
+  {id:124, cat:"esel", q:"What is the total number of Seat Belt Extensions onboard, and what is their cabin class breakdown?", o:["10 total: Business Class (02), Premium Economy Class (03), Economy Class (05)","05 total: Business Class (01), Premium Economy Class (01), Economy Class (03)","06 total: Business Class (02), Premium Economy Class (02), Economy Class (02)","08 total: Business Class (02), Premium Economy Class (02), Economy Class (04)"], a:1},
+  {id:125, cat:"esel", q:"How many Defibrillators (AEDs) are carried onboard the A320-251N (RT Series), and where are they located?", o:["01, in Stowage S2 Comp 221","02, in OVHD Bin C64-C65","02, one in Cockpit and one at Aft Attendant Seat","01, in OVHD Bin C20-C21"], a:1},
+  {id:126, cat:"esel", q:"How many Fire Containment Bags (X-Bags) are carried on the aircraft in total, and where are they assigned?", o:["01 total (Cabin only)","02 total: 01 for Cabin and 01 for Cockpit","03 total: 02 for Cabin and 01 for Cockpit","04 total: one at each door pair"], a:1},
+  {id:127, cat:"esel", q:"What is the total quantity of Personal Breathing Equipment (PBE) units onboard?", o:["05","06","07","08"], a:2},
+  {id:128, cat:"esel", q:"What is the total quantity of Halon-Free Fire Extinguishers onboard?", o:["04","05","06","07"], a:1},
+  {id:129, cat:"esel", q:"What is the total quantity of Portable Oxygen Bottles and Oxygen Masks carried onboard?", o:["04 Oxygen Bottles and 04 Oxygen Masks","06 Oxygen Bottles and 06 Oxygen Masks","08 Oxygen Bottles and 08 Oxygen Masks","07 Oxygen Bottles and 14 Oxygen Masks"], a:1},
+  {id:130, cat:"esel", q:"How are the 06 Oxygen Bottles and 06 Oxygen Masks distributed across the cabin?", o:["02 in Stowage S1 Comp 221, 02 in Stowage S2 Comp 201, and 02 on the Aft Lavatory Forward Faces (1 each on LH and RH)","All 06 in forward stowage compartments","03 in Cockpit and 03 in Aft Galley","02 in C20-C21, 02 in C38-C43, and 02 in C64-C65"], a:0},
+  {id:131, cat:"esel", q:"Where are the mounting provisions for an oxygen bottle located in the forward cabin?", o:["Inside the forward lavatory","On the divider forward face (indicated by green circles on the ESEL diagram)","Inside the cockpit door frame","Under passenger seat 1A"], a:1},
+  {id:132, cat:"esel", q:"How many Flashlights are installed onboard, and where are they located?", o:["06 total: only at cabin attendant seats","08 total: located at attendant seats (06) + 02 in Cockpit","09 total: located at attendant seats (06) + 03 in Cockpit","04 total: one at each exit door"], a:1},
+  {id:133, cat:"esel", q:"How many Megaphones are carried onboard, and where are they located?", o:["01, in OVHD Bin C64-C65","02: 01 in Stowage S2 Comp 201 (Forward) and 01 in OVHD Bin C64-C65 (Aft)","02: both in the cockpit","03: Forward, Mid-cabin, and Aft"], a:1},
+  {id:134, cat:"esel", q:"How many Emergency Locator Transmitters (ELT) are carried onboard, and where is it located?", o:["02, one in Cockpit and one in Aft Galley","01, on the Aft Lavatory Aft Face (RH side)","01, in Stowage S1 Comp 201","01, in OVHD Bin C38-C43"], a:1},
+  {id:135, cat:"esel", q:"How many First Aid Kits (FAK), Medical Kits, and Universal Precaution Kits (UPK) are onboard?", o:["First Aid Kit: 02; Medical Kit: 01; Universal Precaution Kit: 01","First Aid Kit: 01; Medical Kit: 02; Universal Precaution Kit: 02","First Aid Kit: 03; Medical Kit: 01; Universal Precaution Kit: 02","First Aid Kit: 02; Medical Kit: 02; Universal Precaution Kit: 01"], a:0},
+  {id:136, cat:"esel", q:"Where are the 02 First Aid Kits (FAK) stowed?", o:["Both in OVHD Bin C64-C65","01 in Stowage S2 Comp 221 and 01 in OVHD Bin C20-C21","01 in Cockpit and 01 in Aft Lavatory","Both in Stowage S1 Comp 201"], a:1},
+  {id:137, cat:"esel", q:"Where are the Medical Kit (01) and Universal Precaution Kit (01) stowed?", o:["In OVHD Bin C20-C21 (LH side)","In OVHD Bin C64-C65","In Stowage S2 Comp 221","In OVHD Bin C38-C43"], a:0},
+  {id:138, cat:"esel", q:"How many Demo Kit Pouches are carried onboard, and what are their designations?", o:["02 pouches: DK-1 and DK-2","03 pouches: Demo Kit 1 (DK-1), Demo Kit 2 (DK-2), and Demo Kit 3 (DK-3)","04 pouches: DK-1, DK-2, DK-3, and DK-4","01 master pouch in the forward galley"], a:1},
+  {id:139, cat:"esel", q:"How does the content of Demo Kit 3 (DK-3) differ from Demo Kit 1 (DK-1) and Demo Kit 2 (DK-2)?", o:["DK-3 contains 02 each of the Demo Mask, Demo Life Vest, and Demo Seat Belt, whereas DK-1 and DK-2 contain 01 of each","DK-3 contains a megaphone inside the pouch","DK-1 contains 02 sets and DK-3 contains 01 set","All three Demo Kits contain identical quantities (01 of each item)"], a:0},
+  {id:140, cat:"esel", q:"Where are Demo Kit 1 (DK-1), Demo Kit 2 (DK-2), and Demo Kit 3 (DK-3) stowed?", o:["DK-1 in OVHD Bin C20-C21; DK-2 in OVHD Bin with Partition Fwd Box C38-C43; DK-3 in OVHD Bin C64-C65","All three in Stowage S2 Comp 201","DK-1 in S1-201; DK-2 in C20-C21; DK-3 in Aft Galley","DK-1 in Cockpit; DK-2 in C20-C21; DK-3 in C38-C43"], a:0},
+  {id:141, cat:"esel", q:"How many Manual Release Tools are carried onboard?", o:["02","04","06","08"], a:2},
+  {id:142, cat:"esel", q:"How many Crash Axes and pairs of Heat Resistant Gloves are carried onboard, and where are they located?", o:["01 Crash Axe and 01 Heat Resistant Gloves, both located in the Cockpit","02 Crash Axes and 02 Heat Resistant Gloves, divided between Cockpit and Aft Galley","01 Crash Axe in Cockpit and 01 Heat Resistant Gloves in S1 Comp 201","01 Crash Axe in S2 Comp 201 and 01 Heat Resistant Gloves in Cockpit"], a:0},
+  {id:143, cat:"esel", q:"Which emergency equipment items are located in the Cockpit according to the ESEL diagram?", o:["Crash Axe (1), Heat Resistant Gloves (1), PBE (1), Halon-Free Fire Extinguisher (1), Fire Containment Bag (1), Flashlights (2x), and Crew Life Vests (3x)","Medical Kit (1), First Aid Kit (1), and Megaphone (1)","ELT (1), Defibrillator (1), and Oxygen Bottles (2x)","Spare Life Vests (5x) and Infant Life Vests (10x)"], a:0},
+  {id:144, cat:"esel", q:"How many Escape Slides are installed on the A320-251N, and how are they categorized?", o:["04 total: 02 Fwd Door L&R and 02 Aft Door L&R","06 total: 02 Escape Slides Fwd Door L&R, 02 Escape Slides Overwing Exit L&R, and 02 Escape Slides Aft Door L&R","08 total: 02 at each of the 4 cabin doors","02 total: Overwing exits only"], a:1},
+  {id:145, cat:"esel", q:"What are the Exit Types for the Forward Doors, Overwing Exits, and Aft Doors shown on the ESEL layout?", o:["Fwd Doors: Type I; Overwing Exits: Type III; Aft Doors: Type I","Fwd Doors: Type A; Overwing Exits: Type I; Aft Doors: Type A","All exits are Type I","Fwd Doors: Type I; Overwing Exits: Type II; Aft Doors: Type III"], a:0},
+  {id:146, cat:"esel", q:"According to the Revision Table on Drawing A320-A-030, what change occurred in Revision A (REV A)?", o:["Fire Containment Bag cabin location revised","Fire Containment Bag added (Cabin & Cockpit)","Defibrillator Qty. changed from 01 to 02","Infant Life Vest quantity increased to 10"], a:2},
+  {id:147, cat:"esel", q:"According to the Revision Table on Drawing A320-A-030, what change occurred in Revision B (REV B)?", o:["Defibrillator Qty. changed from 01 to 02","Fire Containment Bag added (Cabin & Cockpit)","Fire Containment Bag cabin location revised","First Aid Kit moved to S2 Comp 221"], a:1},
+  {id:148, cat:"esel", q:"According to the Revision Table on Drawing A320-A-030, what change occurred in Revision C (REV C) dated 08.05.2026?", o:["Fire Containment Bag cabin location revised","Escape slides updated","Megaphone quantity changed to 02","Universal Precaution Kit added"], a:0},
+  {id:149, cat:"esel", q:"What are the Drawing Number (DRG.No.) and Reference JADE Drawing Number for the A320 ESEL?", o:["DRG.No.: A320-A-030 (Rev C); JADE Drawing No.: 348000010 (Rev-B)","DRG.No.: AI/CST/SEP/2026/23; JADE Drawing No.: A320-251N","DRG.No.: 348000010; JADE Drawing No.: A320-A-027","DRG.No.: A320-RT-001; JADE Drawing No.: 11907"], a:0},
+  {id:150, cat:"esel", q:"Which items are located inside Stowage S1 Comp 201 (near L1 Door) in the revised layout?", o:["First Aid Kit (01) and Medical Kit (01)","Spare Life Vests (3x) and Cabin Fire Containment Bag / X-Bag (01)","Oxygen Bottles (2x) and Megaphone (01)","Defibrillators (2x) and Demo Kit 3 (01)"], a:1}
+];
+
+let selectedMode = "practice";
+let sessionQuestions = [];
+let currentIndex = 0;
+let userAnswers = {};
+let flaggedQuestions = new Set();
+let timerInterval = null;
+let secondsRemaining = 0;
+
+function selectMode(mode) {
+  selectedMode = mode;
+  document.getElementById("modePracticeCard").classList.toggle("selected", mode === "practice");
+  document.getElementById("modeTestCard").classList.toggle("selected", mode === "test");
+}
+
+function shuffleArray(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function startSession(customQuestions = null) {
+  clearInterval(timerInterval);
+  userAnswers = {};
+  flaggedQuestions.clear();
+  currentIndex = 0;
+
+  if (customQuestions) {
+    sessionQuestions = customQuestions;
+  } else {
+    const topic = document.getElementById("topicSelect").value;
+    const shouldShuffle = document.getElementById("shuffleToggle").checked;
+
+    if (topic === "med") sessionQuestions = ALL_QUESTIONS.filter(q => q.cat === "med");
+    else if (topic === "esel") sessionQuestions = ALL_QUESTIONS.filter(q => q.cat === "esel");
+    else if (topic === "mock25") sessionQuestions = shuffleArray(ALL_QUESTIONS).slice(0, 25);
+    else if (topic === "mock50") sessionQuestions = shuffleArray(ALL_QUESTIONS).slice(0, 50);
+    else sessionQuestions = [...ALL_QUESTIONS];
+
+    if (shouldShuffle && topic !== "mock25" && topic !== "mock50") {
+      sessionQuestions = shuffleArray(sessionQuestions);
+    }
+  }
+
+  // Configure UI for Mode
+  const badge = document.getElementById("activeModeBadge");
+  const timerEl = document.getElementById("timerDisplay");
+  const liveScoreEl = document.getElementById("liveScoreTxt");
+
+  if (selectedMode === "practice") {
+    badge.textContent = "Practice Mode";
+    badge.className = "mode-pill pill-practice";
+    timerEl.style.display = "none";
+    liveScoreEl.style.display = "inline";
+    document.getElementById("finishBtn").textContent = "Finish Practice & View Summary";
+  } else {
+    badge.textContent = "Test Mode";
+    badge.className = "mode-pill pill-test";
+    timerEl.style.display = "inline";
+    liveScoreEl.style.display = "none";
+    document.getElementById("finishBtn").textContent = "Submit Exam";
+    secondsRemaining = sessionQuestions.length * 45; // 45 sec per question
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      secondsRemaining--;
+      updateTimerDisplay();
+      if (secondsRemaining <= 0) {
+        clearInterval(timerInterval);
+        alert("⏰ Time is up! Your test is being submitted automatically.");
+        finishSession();
+      }
+    }, 1000);
+  }
+
+  switchScreen("quizScreen");
+  document.getElementById("homeHeaderBtn").style.display = "inline-block";
+  renderQuestion();
+}
+
+function updateTimerDisplay() {
+  const mins = Math.floor(secondsRemaining / 60);
+  const secs = secondsRemaining % 60;
+  document.getElementById("timerDisplay").textContent =
+    `⏱️ ${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function renderQuestion() {
+  const qObj = sessionQuestions[currentIndex];
+  const total = sessionQuestions.length;
+  const answeredCount = Object.keys(userAnswers).length;
+
+  document.getElementById("qProgressTxt").textContent = `Question ${currentIndex + 1} of ${total}`;
+  document.getElementById("answeredCountTxt").textContent = `${answeredCount}/${total}`;
+  document.getElementById("progressBarFill").style.width = `${((currentIndex + 1) / total) * 100}%`;
+
+  if (selectedMode === "practice") {
+    let correctSoFar = 0;
+    for (const [id, ans] of Object.entries(userAnswers)) {
+      const ref = ALL_QUESTIONS.find(x => x.id === Number(id));
+      if (ref && ref.a === ans) correctSoFar++;
+    }
+    document.getElementById("liveScoreTxt").textContent = `Score: ${correctSoFar} / ${answeredCount}`;
+  }
+
+  document.getElementById("qCatBadge").textContent =
+    qObj.cat === "med" ? `Q${qObj.id} • Medical & First Aid` : `Q${qObj.id} • A320neo ESEL Circular`;
+
+  const flagBtn = document.getElementById("flagBtn");
+  const isFlagged = flaggedQuestions.has(qObj.id);
+  flagBtn.classList.toggle("flagged", isFlagged);
+  flagBtn.textContent = isFlagged ? "🚩 Marked" : "🚩 Mark for Review";
+
+  document.getElementById("qTextDisplay").textContent = qObj.q;
+
+  const optsContainer = document.getElementById("optionsContainer");
+  optsContainer.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+  const userAns = userAnswers[qObj.id];
+
+  qObj.o.forEach((optText, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+
+    if (userAns !== undefined) {
+      if (selectedMode === "practice") {
+        if (idx === qObj.a) btn.classList.add("correct");
+        else if (idx === userAns) btn.classList.add("wrong");
+      } else {
+        if (idx === userAns) btn.classList.add("selected-test");
+      }
+    }
+
+    btn.innerHTML = `<span class="opt-letter">${letters[idx]}</span><span>${optText}</span>`;
+    btn.onclick = () => handleOptionSelect(qObj.id, idx);
+    optsContainer.appendChild(btn);
+  });
+
+  const fb = document.getElementById("practiceFeedback");
+  if (selectedMode === "practice" && userAns !== undefined) {
+    fb.style.display = "block";
+    if (userAns === qObj.a) {
+      fb.style.background = "var(--correct-bg)";
+      fb.style.color = "var(--correct-text)";
+      fb.textContent = `✅ Correct! (${letters[qObj.a]}. ${qObj.o[qObj.a]})`;
+    } else {
+      fb.style.background = "var(--wrong-bg)";
+      fb.style.color = "var(--wrong-text)";
+      fb.textContent = `❌ Incorrect. Correct Answer: ${letters[qObj.a]}. ${qObj.o[qObj.a]}`;
+    }
+  } else {
+    fb.style.display = "none";
+  }
+
+  document.getElementById("prevBtn").disabled = currentIndex === 0;
+  document.getElementById("nextBtn").textContent = currentIndex === total - 1 ? "Finish →" : "Next →";
+}
+
+function handleOptionSelect(qId, idx) {
+  if (selectedMode === "practice" && userAnswers[qId] !== undefined) return; // Lock first choice in practice
+  userAnswers[qId] = idx;
+  renderQuestion();
+}
+
+function toggleFlag() {
+  const qId = sessionQuestions[currentIndex].id;
+  if (flaggedQuestions.has(qId)) flaggedQuestions.delete(qId);
+  else flaggedQuestions.add(qId);
+  renderQuestion();
+}
+
+function goNext() {
+  if (currentIndex < sessionQuestions.length - 1) {
+    currentIndex++;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
+    confirmFinish();
+  }
+}
+
+function goPrev() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function togglePalette(open) {
+  const modal = document.getElementById("paletteModal");
+  if (open) {
+    const grid = document.getElementById("paletteGrid");
+    grid.innerHTML = "";
+    sessionQuestions.forEach((q, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "p-cell";
+      if (idx === currentIndex) btn.classList.add("current");
+
+      const ans = userAnswers[q.id];
+      if (flaggedQuestions.has(q.id)) {
+        btn.classList.add("p-flag");
+      } else if (ans !== undefined) {
+        if (selectedMode === "practice") {
+          btn.classList.add(ans === q.a ? "p-correct" : "p-wrong");
+        } else {
+          btn.classList.add("p-ans");
+        }
+      }
+      btn.textContent = idx + 1;
+      btn.onclick = () => {
+        currentIndex = idx;
+        togglePalette(false);
+        renderQuestion();
+      };
+      grid.appendChild(btn);
+    });
+    modal.classList.add("open");
+  } else {
+    modal.classList.remove("open");
+  }
+}
+
+function confirmFinish() {
+  const unanswered = sessionQuestions.length - Object.keys(userAnswers).length;
+  const msg = unanswered > 0
+    ? `You have ${unanswered} unanswered question(s). Submit anyway?`
+    : `Are you ready to submit and view your scorecard?`;
+  if (confirm(msg)) finishSession();
+}
+
+function finishSession() {
+  clearInterval(timerInterval);
+  let correct = 0, wrong = 0, skipped = 0;
+
+  sessionQuestions.forEach(q => {
+    const uAns = userAnswers[q.id];
+    if (uAns === undefined) skipped++;
+    else if (uAns === q.a) correct++;
+    else wrong++;
+  });
+
+  const total = sessionQuestions.length;
+  const pct = Math.round((correct / total) * 100);
+
+  const badge = document.getElementById("passFailBadge");
+  if (pct >= 80) {
+    badge.textContent = "🎉 PASS (DISTINCTION)";
+    badge.style.background = "var(--correct-bg)";
+    badge.style.color = "var(--correct-text)";
+  } else if (pct >= 70) {
+    badge.textContent = "✅ PASS";
+    badge.style.background = "#dbeafe";
+    badge.style.color = "#1e40af";
+  } else {
+    badge.textContent = "⚠️ NEEDS REVISION (<70%)";
+    badge.style.background = "var(--wrong-bg)";
+    badge.style.color = "var(--wrong-text)";
+  }
+
+  document.getElementById("finalPctTxt").textContent = `${pct}%`;
+  document.getElementById("finalFractionTxt").textContent = `You scored ${correct} out of ${total}`;
+  document.getElementById("resCorrect").textContent = correct;
+  document.getElementById("resWrong").textContent = wrong;
+  document.getElementById("resSkipped").textContent = skipped;
+
+  document.getElementById("retryWrongBtn").style.display = (wrong + skipped > 0) ? "block" : "none";
+
+  switchScreen("resultScreen");
+  const firstTab = document.querySelector(".rf-btn");
+  renderReviewList("all", firstTab);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderReviewList(filter, btnEl) {
+  document.querySelectorAll(".rf-btn").forEach(b => b.classList.remove("active"));
+  if (btnEl) btnEl.classList.add("active");
+
+  const container = document.getElementById("reviewListContainer");
+  container.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+
+  const filtered = sessionQuestions.filter(q => {
+    const uAns = userAnswers[q.id];
+    if (filter === "correct") return uAns === q.a;
+    if (filter === "wrong") return uAns !== undefined && uAns !== q.a;
+    if (filter === "skipped") return uAns === undefined;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-weight:600;">No questions in this category.</div>`;
+    return;
+  }
+
+  filtered.forEach(q => {
+    const uAns = userAnswers[q.id];
+    let statusClass = "r-skipped";
+    let statusLabel = "⚠️ Unanswered";
+    if (uAns === q.a) { statusClass = "r-correct"; statusLabel = "✅ Correct"; }
+    else if (uAns !== undefined) { statusClass = "r-wrong"; statusLabel = "❌ Incorrect"; }
+
+    const div = document.createElement("div");
+    div.className = `review-item ${statusClass}`;
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;">
+        <span>Q${q.id} • ${q.cat === 'med' ? 'Medical & First Aid' : 'A320neo ESEL'}</span>
+        <span>${statusLabel}</span>
+      </div>
+      <div style="font-size:0.95rem;font-weight:700;margin-bottom:10px;line-height:1.4;">${q.q}</div>
+      ${uAns !== undefined && uAns !== q.a ? `<div style="font-size:0.84rem;color:var(--wrong-text);margin-bottom:4px;"><b>Your Answer:</b> ${letters[uAns]}. ${q.o[uAns]}</div>` : ""}
+      <div style="font-size:0.85rem;color:var(--correct-text);font-weight:600;"><b>Correct Answer:</b> ${letters[q.a]}. ${q.o[q.a]}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function retryWrongOnly() {
+  const missed = sessionQuestions.filter(q => userAnswers[q.id] !== q.a);
+  if (missed.length > 0) startSession(missed);
+}
+
+function switchScreen(screenId) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(screenId).classList.add("active");
+}
+
+function confirmHome() {
+  if (document.getElementById("quizScreen").classList.contains("active")) {
+    if (!confirm("Exit current session and return to the main menu?")) return;
+  }
+  showHome();
+}
+
+function showHome() {
+  clearInterval(timerInterval);
+  document.getElementById("homeHeaderBtn").style.display = "none";
+  switchScreen("homeScreen");
+}
+
+function shareQuiz() {
+  if (navigator.share) {
+    navigator.share({
+      title: "Air India Cabin Crew Assessment — 150 MCQs",
+      text: "Practice & Test Mode for Air India Cabin Crew Medical & A320neo ESEL Assessment:",
+      url: window.location.href
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Link copied to clipboard!");
+  }
+}
+</script>
+</body>
+</html>
